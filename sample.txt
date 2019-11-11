@@ -1,0 +1,295 @@
+Encryption TestingIntroduction to EncryptionEncryption is basically the method of disguising plain or clear text in such a way as tohide its contents from anyone for whom it is not intended.A cryptographic algorithm, or cipher, is a mathematical function used duringencryption and decryption and works in combination with a specific key. Differentkeys will encrypt the same plaintext to a different cipher text.Public Key EncryptionBoth PGP and GPG use public-key cryptography. In a public-key system, each userhas a pair of keys consisting of a private key and a public key. The private key is tobe kept secret to the user and should never be revealed and the public key can begiven to anyone with whom the user wants to communicate. The public key can bethought of as an open safe. When you encrypt a document using a public key it is likeputting it in the safe, shutting it and spinning the combination lock several times. Thecorresponding private key is the combination to open the safe. Therefore only theperson who holds the private key can recover the document encrypted using theassociated public key.GPG vs PGPPGP (short for Pretty Good Privacy) is a public key encryption program designed todeliver automated encryption services to a number integrated applications.GPG isbasically a free tool that provides the same functionality as PGP. Keys created in onecan be used in the other and similarly files encrypted using one can be decryptedusing the other. GPG is, by default, a command line tool. There are graphicalinterfaces available for it but it is not necessary to install them for this test. For thepurpose of this test we are going to use PGP and GPGseparately.PassphrasesIn order to unlock your private key you must create a passphrase. There is no limit onthe length of a passphrase, and it should be carefully chosen. From the perspective of
+security, the passphrase to unlock the private key is one of the weakest points inpublic-key encryption since it is the only protection you have if another individualgets your private key. Ideally, the passphrase should not use words from a dictionaryand should mix the case of alphabetic characters as well as use non-alphabeticcharacters.Agood passphrase is crucial to the secure use of public-keyencryption.Key DistributionThere are a number of ways of distributing keys. For the purpose of this test,exporting the key to a file and attaching it to an email will suffice. It's importantwhen sending people your key that you do not include your private key as this shouldbe kept only for your use.For this test we would like you to do the following using both PGP and GPG:1)Download and install the appropriate software2)Create a keypair (private/public key)3)Create a revocation certificate4)Distribute your public key5)Encrypt documents/emails for other recipients6)Encrypt files and folders for your own use7)Revoke your keyPGP1)Go towww.pgp.comand download the 30 day trial version of PGP Desktop (youshould get the documentation with the download).2)Install the software and activate using your trial serial number3)Start up the program but quit the setup assistant .4)Generate a PGP keypair by going to File -> New -> PGP Key butdon'tpublishyour public key to the PGP Global Directory if asked.5)Add yourself to the revokers list on your keypair – see instructions in the userguide.6)Encrypt a file (any file will do) with your own key.7)Export your public key by going to File -> Export8)Send your public key, and the file you encrypted in (5) tojonathan.ashton@oucs.ox.ac.ukwith the subject line: “PGP TEST”.9)Follow the instruction in the encrypted file that I send you back before moving onto test GPG.GPG1)Go towww.gnupg.organd download the appropriate version for your OperatingSystem2)From the user guide in the documentation section of thewebsite, follow theinstructions for1.Generating a new keypair (use the default key size – 1024 bits)2.Generating a revocation certificate.3.Exchanging keys – exporting a public key.3)Encrypt a file ( as described in encrypting and decrypting documents) using your
+own key.4)Send the encrypted file to the email address given above with the subject line :“GPG TEST”5)Follow the instruction in the encrypted file that I send you back.
+
+    Log in Sign up
+
+By using our site, you acknowledge that you have read and understand our Cookie Policy, Privacy Policy, and our Terms of Service.
+Cryptography
+
+    Home
+        Questions
+        Tags
+        Users
+        Unanswered
+
+How to check a file was encrypted (really & correctly)
+Ask Question
+Asked 3 months ago
+Active 3 months ago
+Viewed 6k times
+17
+
+I would like to audit how an implementation of an encryption algorithm is really performed with the following given data of the problem:
+
+    the encryption mechanism is reversible (this isn’t a signature),
+    the algorithm is pretended to be AES, but might be implemented correctly or not, or worse something else,
+    the key is not known (in the case I am interested in, I want to check that all files are really and correctly encrypted, but I could play with specifically designed ones),
+    I don't have access to the source code.
+
+At least I would like to be able to detect that the file is not encrypted. Next I would like to be able to detect that the RNG is running in a tiny set or not really random.
+
+In a first approach I thought to make an analysis of the randomness quality of the encrypted file: average value + standard deviation (with a tool like ent). But I immediatly thought of artificial files with a perfect average value and standard deviation which are perfectly regular and not the result of any encryption. Then my first approach is wrong.
+
+The environment in which I will make this audit is a Unix one. ( I cannot use tools or algorithms I cannot read, compile and check myself. )
+
+Practical case:
+
+    I would like to check that my iPhone is correctly encrypted and what is the AES key derived from either a constant, my password, a hardware uniq identifier.
+
+    I would like to perform the same validation of an iPhone of any staff member which will ask me to make the same validation for his professionnal iPhone. This is a service toward users to provide them trust in what they think is encrypted and has to be.
+
+cryptanalysis file-encryption
+shareimprove this question
+edited Aug 7 at 18:27
+asked Aug 5 at 11:28
+dan
+18911 silver badge77 bronze badges
+
+    3
+    If you're auditing a real thing, the data must be real. It must therefore have some characteristic stochastic properties that you could look for. Or not have them. Or are you just encrypting one time pads/TRNG output? – Paul Uszak Aug 5 at 12:15
+    8
+    Note that by definition, "encryption" is reversible. Otherwise it is referred to as "hashing" or "signature". – Nayuki Aug 6 at 4:11
+    5
+    Do you have access to the binary that's doing this? That makes it feasible but time consuming to find out what's really happening – pjc50 Aug 6 at 9:25
+    4
+    If you could do this, it would be a huge security hole. Say you know the message is either "Yes, attack at dawn!" or "No, do not attack!". If your proposed test existed, it would pass with one plaintext and fail with the other. But you would know nothing an attacker doesn't know and you'd be able to decrypt the data! – David Schwartz Aug 6 at 22:52
+    2
+    Generally spoken, incorrect implementations enable successful attacks; therefore in general terms the audit consists of performing known attacks and see whether they succeed. (Of course if the algorithm is unknown one must do that for all potential algorithms.) – Peter - Reinstate Monica Aug 7 at 11:54
+
+show 6 more comments
+7 Answers
+active
+oldest
+votes
+29
+
+If you can't get access to the key for at least some sample uses, there's no way to be sure. For example, it's impossible to distinguish AES-128 from AES-256 if you don't have access to the key. That's true of any encryption method: without knowing the key, you can't distinguish the ciphertext from random data of the same length.
+
+A professional auditor would normally get access to some test keys, if they can't normally access those keys through some administration interface.
+
+You can make a statistical test, but all this will tell you is that the encryption is not completely botched or skipped.
+
+If your vendor is not completely dishonest and they claim to have used AES, they probably did use AES. A far more common problem than not using AES is using AES wrong. Here too, you can't be sure that they got it right, but you can at least check for some common problems.
+
+Check how the length of the ciphertext varies depending on the length of the plaintext. The ciphertext should include an initialization vector and an authentication tag, each of which normally adds 16 bytes. If the ciphertext is not 32 bytes larger than the plaintext, something is probably wrong, but there are cases where it can be ok (e.g. for disk encryption where the sector number is used to build unique IVs and no threat requires authentication).
+
+Pass the same inputs in different conditions and make sure that the resulting ciphertexts are completely different. If you can arrange to encrypt multiple messages with the same key, make sure that identical messages result in completely different ciphertexts. This validates that initialization vectors are generated, if not correctly, then at least non-stupidly.
+
+If there's a way for you to submit modified ciphertexts, do that and check that they are rejected with a generic “invalid ciphertext” error, rather than a specific error due to invalid content. This validates that authenticated encryption is used. There are threat models where it's ok not to have authentication, but you need to tread very carefully.
+
+Two things that you definitely cannot know by looking at the output is whether the keys are generated and stored securely. (As opposed to e.g. using a non-cryptographic random generator to generate keys, and writing a copy of the secret keys to an unprotected location.) You can only audit this by looking at the behavior of the system.
+shareimprove this answer
+answered Aug 5 at 18:18
+Gilles 'SO- stop being evil'
+10.5k33 gold badges3131 silver badges6262 bronze badges
+
+    For the last check, I used a canari method: a huge key (a string of 128 U), and during and after the encryption process on a system without not too much free room, I ran a grep canari /dev/kmem. What is your critical analysis of this method? (Perhaps interesting enough to fork another question?). – dan Aug 5 at 23:53 
+
+    This can be much improved if you know how to detect electronic code book. – Joshua Aug 6 at 1:02
+    1
+    @dan I don't understand what you mean by “a huge key (a string of 128 U)”. An AES key would be 32 bytes, and you said you didn't have access to the key. – Gilles 'SO- stop being evil' Aug 6 at 8:32
+    5
+    @dan A GUI where you input a key? That's really weird. Humans shouldn't ever see a secret key. A password is a completely different thing from a key. – Gilles 'SO- stop being evil' Aug 6 at 9:18
+    1
+    @leftaroundabout Indeed, that's indistinguishability from random, which is stronger than ciphertext indistinguishability. I was simplifying. Symmetric ciphers that are used in practice do exhibit indistinguishability from random noise apart possibly in the nonce/IV. That's because if the ciphertext excluding the IV and authentication tag is the same size as the plaintext, there's no noise that couldn't be a ciphertext. – Gilles 'SO- stop being evil' Aug 7 at 13:26
+
+show 4 more comments
+10
+
+Unless the file has a plaintext header which indicates that it has been encrypted, there is no way to distinguish ciphertext from uniform random data. You can heuristically guess that a file is encrypted if it has absolutely no structure and appears completely random, but you cannot definitively prove it.
+
+Any cipher whose output could be distinguished from random would be considered broken.
+shareimprove this answer
+answered Aug 5 at 11:57
+forest
+8,44711 gold badge2929 silver badges6262 bronze badges
+
+    5
+    I cannot trust a plain text header (as a magic number) as it can be falsified. – dan Aug 5 at 15:55
+    1
+    Well, there's no difference between the headers of gpg --encrypt and gpg --sign and even gpg --store, all of them are OpenPGP messages with very similar headers and identical ASCII armor – you can't easily tell by looking which one is encrypted and which one is not. (Hint: The latter two aren't.) – grawity Aug 6 at 6:07 
+
+add a comment
+7
+
+In addition to what the other answers have stated, "proper" encryption using AES-256 (block mode choice aside) can still allow backdoors, such as by maliciously choosing IVs/nonces. Phil Rogaway and others discuss this in more detail in their paper "Security of Symmetric Encryption against Mass Surveillance" (abstract available here).
+shareimprove this answer
+answered Aug 6 at 0:53
+rlee827
+20411 silver badge88 bronze badges
+add a comment
+4
+
+This question is very easy to answer:
+
+The implementation isn't correct and you absolutely should not use it. Any other attitude towards this black box is hopelessly attackable.
+
+Your stance should be: "I must be able to see the source, audit the source, and build the source myself into a binary". Anything short of that is irresponsible on your part. Do not accept the insecure half-measures proposed in the other answers.
+
+You do not need to demand access to the keys used to do the encryption, but you absolutely must be able to verify that the algorithm is correct, and this simply cannot be correctly done only by observing its inputs and outputs. This is not even restricted to encryption -- any program can have a backdoor input that does something nasty and is essentially impossible to discover just by external experimentation -- but its consequences to you are much higher for cryptographic primitives than for other pieces of noncritical software.
+shareimprove this answer
+answered Aug 7 at 0:47
+Daniel Wagner
+14911 bronze badge
+
+    2
+    I'm not sure the OP wants to use the encryption program; I understand he wants to audit it, possibly on somebody else's behalf. Wild guesses would include educational or professional assignments where the actual user does not have access to the sources or pretends not to (in the case of education). – Peter - Reinstate Monica Aug 7 at 11:51
+    3
+    @PeterA.Schneider I'm not sure that changes my answer significantly; the only responsible audit result should be "DON'T USE THIS", whether it's on your own behalf or somebody else's. – Daniel Wagner Aug 7 at 13:54
+
+add a comment
+3
+
+If you're wondering about the iPhone's encryption specifically, then this work may have already been done for you. Many Apple/iPhone products have passed formal FIPS 140-2 certification, which does extensive tests on the sorts of things that you're concerned about. If you want to see details about which products have been certified for which algorithms/key sizes, go to NIST's CMVP website and search for vendor "Apple". Apple also has details on their website about the security certifications they've completed on various products.
+
+FIPS 140-2 focuses on the cryptographic module by itself, things like the algorithm implementations or key management practices. This would be enough to show that the random number generator is sufficiently random, or that what they claim is AES really is true AES.
+
+What this doesn't cover is how they use the crypto engine (i.e., did the filesystem really encrypt this particular file). Testing this yourself will be difficult on a mobile device since you can't (for instance) transplant the hard drive to a different system to read the raw data and check for plaintext. Apple's certification page lists a number of additional certifications that I'm not too familiar with. I'd recommend taking a look at those certification programs and seeing if any of them cover the sorts of tests you're wanting to do. After all, companies like Apple spend a lot of time and money going through these certification processes so that you don't have to do tests like these yourself.
+shareimprove this answer
+answered Aug 8 at 1:08
+bta
+13122 bronze badges
+
+    👌🏻 : thank you, but I need an answer I am directly responsible of (for my colleagues). I should be able to reproduce it as any scientific analysis. – dan Aug 8 at 11:28
+    + : No this isn’t an iPhone’s encryption implementation I am specifically inrerested in. Veracrypt is another product I would like to approach a proof of lack of bad practice as far as I could. – dan Aug 8 at 11:35
+
+add a comment
+1
+
+Many answers have pointed out that what you seek to do is not possible. Proving that something is encrypted with key X is not possible without having key X and a signature for what was encrypted. If it were possible, then the encryption algorithm would be a faulty one. AES does not fit that bill.
+
+However, if you are really in a bind, where management has told you that you must do this, despite proof that you cannot, there is a solution. Disassemble and reverse engineer the encryption implementation, and confirm by your own eyes that that particular set of bits, when executed as a Unix executable, properly encrypts the data. It's a horrible task, but it's infinitely more doable than proving what cannot be proven.
+
+Beyond that, one step you might try is to develop a threat model. For instance, if you can assume that all files are encrypted in the same way as your test files, you can at least make some statements by inspecting the results of encrypting some known plaintext.
+shareimprove this answer
+answered Aug 7 at 4:08
+Cort Ammon
+2,42088 silver badges1515 bronze badges
+add a comment
+0
+
+Have you got a reference set some plain text versions of these files at all? A representative set of 10,000 files, large and small, from 1 kb to 1 GB could be passed through the system. Measurements can be taken. , that you could trial encrypt with this cypher, albeit a freshly made new key. See if you can correlate the file sizes probably match to 4KB or 64 KB blocks etc.
+
+Why do you want to audit the 'encryptability' of this enterprise if you say you collectively do not have the master key? Or perhaps does the key exist beyond your reach in someplace? If so, you can arrange proofs to be made from it.
+
+Knowing exactly how long it takes to run down to the CPU cycle can be extremely useful. Maybe you could simulate the processing in virtualbox and run it in slow motion to get a feel for the amount of floating point ops is happening. Maybe try to mount a side-channel attack on the CPU cache and memory controller etc.
+
+It's probably running on AES hardware, with unique boot parameters. For example, the number of cycles to re-hash; or the values of some initial prime numbers etc. After that it's running on the AES hardware. This technique would sure make it a bunch harder cos if you stumble on the right key it might actually not work in time to notice etc.
+
+I think generally speaking, you seek a ZK proof - a zero knowledge proof. That is some cool mathematics right there. Allows one to verify a maths operation but not really know whats going on.
+shareimprove this answer
+answered Aug 6 at 17:30
+Tomachi
+10644 bronze badges
+add a comment
+Your Answer
+
+Sign up or log in
+Sign up using Google
+Sign up using Facebook
+Sign up using Email and Password
+Post as a guest
+Name
+Email
+
+Required, but never shown
+
+By clicking “Post Your Answer”, you agree to our terms of service, privacy policy and cookie policy
+Not the answer you're looking for? Browse other questions tagged cryptanalysis file-encryption or ask your own question.
+Blog
+
+    What’s the worst bug you’ve ever dealt with?
+
+    Let’s Get Graphic: A Few Ways To Draw On The Web
+
+Featured on Meta
+
+    Feedback post: Moderator review and reinstatement processes
+
+    Post for clarifications on the updated pronouns FAQ
+
+Related
+10
+Tamper-proofing log files
+3
+How to design a cryptographically secure file hosting service
+4
+How to encrypt a file for random access
+1
+Data I/O operations for encrypted files
+0
+Encrypt a file for multiple persons with different keys?
+6
+Derivation of many (Key, IV) pairs from random 128 nonces and one secret 512 master key
+2
+Can I use a deterministic NONCE for AES-GCM file encryption if I generate “fresh” keys for each encrypted file
+7
+Can you help me find a cryptanalytic way to attack a simple monoalphabetic substitution cipher algorithm?
+Hot Network Questions
+
+    Very high precision zero crossing detection
+    I have stack-exchanged through my undergrad math program. Am I likely to succeed in Mathematics PhD programs?
+    Canonical reference for Chern characteristic classes
+    Does single-stepping on the 8086 behave as described in the user manual?
+    Can you make monkeys human?
+    Rashi's explanation of why we are told that Avram was 86 at the birth of Yishma'el
+    CO₂ level is high enough that it reduces cognitive ability. Isn't that a reason to worry?
+    "Ich habe Durst" vs "Ich bin durstig": Which is more common?
+    Passport expiration requirement for Jordan Visa
+    Why does Smaug have 4 legs in the 1st movie but only 2 legs in the 2nd?
+    How to make sure there's equal difference in length between lines
+    What's an "add" chord?
+    Should a middle class person emulate a very wealthy investor for % of cash hold?
+    Making Sandwiches
+    Translation Golf XLIX - An Accurate Shot
+    What is the "opposite" of a random variable?
+    Dicht antonym - what is it?
+    Are the EVA suits used in the ISS and in the NBL same or different?
+    What's the name of the role of characters who buff teammates?
+    Implement the Max-Pooling operation from Convolutional Neural Networks
+    Why use \[FormalN]?
+    Why is potassium ferrocyanide considered safe for consumption, when it is just one reaction away from the highly toxic potassium cyanide?
+    Given an array A[] and a number x, check for pair in A[] with sum as x
+    Can I permanently banish a devil from one layer of the Hells to another using the Banishment spell?
+
+Question feed
+
+Cryptography
+
+    Tour
+    Help
+    Chat
+    Contact
+    Feedback
+    Mobile
+    Disable Responsiveness
+
+Company
+
+    Stack Overflow
+    Stack Overflow Business
+    Developer Jobs
+    About
+    Press
+    Legal
+    Privacy Policy
+
+Stack Exchange
+Network
+
+    Technology
+    Life / Arts
+    Culture / Recreation
+    Science
+    Other
+
+    Blog
+    Facebook
+    Twitter
+    LinkedIn
+
+site design / logo © 2019 Stack Exchange Inc; user contributions licensed under cc by-sa 4.0 with attribution required. rev 2019.11.7.35372
+This is Harsh! 
+
+
